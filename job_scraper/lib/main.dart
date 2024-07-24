@@ -1,3 +1,4 @@
+import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -19,22 +20,27 @@ class JobScraper extends StatefulWidget {
 class _JobScraperState extends State<JobScraper> {
   @override
   Widget build(BuildContext context){
-    const appTitle = 'JobScrape';
-    return MaterialApp(
+    const appTitle = 'JobScraper';
+    return const MaterialApp(
       title: appTitle,
       home: Scaffold(
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
-        body: Column(
-          children: [ 
-          const Center(
-            child: Text('JobScrape', 
-            style: TextStyle(
-              fontSize: 50,
-              fontWeight: FontWeight.bold,
+        body: Stack(
+          children: [
+            Center(
+              child: SizedBox(
+                height: 300,
+                child: Text(
+                  'JobScraper',
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                  fontSize: 50,
+                  fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
             ),
-            ),
-          ),
-          SearchBar(),
+            SearchBar(),
           ],
         ),
       ),
@@ -48,17 +54,26 @@ class SearchBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.center,
       children: <Widget>[
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-          child: TextField(
-            decoration: InputDecoration(
-            border: OutlineInputBorder(),
-            hintText: 'Enter a search term',
+        Center(
+        child: SizedBox(
+          width: 450,
+          height: MediaQuery.of(context).size.height,
+          child: const Center(
+            child: Padding(
+              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: OutlineInputBorder(),
+                  hintText: 'Enter a search term',
+                ),
+              ),
+            ),
           ),
+        )
         ),
-      )],
+      ],
     );
   }
 }
