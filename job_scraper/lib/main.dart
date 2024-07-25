@@ -1,4 +1,3 @@
-import 'dart:ffi';
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
@@ -7,7 +6,7 @@ import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
 
 void main () {
-  runApp(JobScraper());
+  runApp(const JobScraper());
 }
 
 class JobScraper extends StatefulWidget {
@@ -18,10 +17,19 @@ class JobScraper extends StatefulWidget {
 }
 
 class _JobScraperState extends State<JobScraper> {
+  final myController = TextEditingController();
+
+  @override
+  void dispose() {
+    // Clean up the controller when the widget is disposed.
+    myController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context){
     const appTitle = 'JobScraper';
-    return const MaterialApp(
+    return MaterialApp(
       title: appTitle,
       home: Scaffold(
         backgroundColor: Color.fromARGB(255, 255, 255, 255),
@@ -40,40 +48,27 @@ class _JobScraperState extends State<JobScraper> {
                 ),
               ),
             ),
-            SearchBar(),
+            Center(
+              child: SizedBox(
+                width: 700,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
+                  child: TextField(
+                    controller: myController,
+                    onSubmitted: (String value) {
+                      print('hello');
+                    },
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter a search term',
+                    ),
+                  )
+                )
+              ),
+            ),
           ],
         ),
       ),
-    );
-  }
-}
-
-class SearchBar extends StatelessWidget {
-  const SearchBar ({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      children: <Widget>[
-        Center(
-        child: SizedBox(
-          width: 450,
-          height: MediaQuery.of(context).size.height,
-          child: const Center(
-            child: Padding(
-              padding: EdgeInsets.symmetric(horizontal: 8, vertical: 16),
-              child: TextField(
-                decoration: InputDecoration(
-                  border: OutlineInputBorder(),
-                  hintText: 'Enter a search term',
-                ),
-              ),
-            ),
-          ),
-        )
-        ),
-      ],
     );
   }
 }
