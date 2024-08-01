@@ -1,5 +1,4 @@
 import 'dart:ui';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
@@ -31,8 +30,9 @@ class _JobScraperState extends State<JobScraper> {
     const appTitle = 'JobScraper';
     return MaterialApp(
       title: appTitle,
-      home: Scaffold(
-        backgroundColor: Color.fromARGB(255, 255, 255, 255),
+      home: Builder(
+        builder: (context) => Scaffold(
+          backgroundColor: Color.fromARGB(255, 255, 255, 255),
         body: Stack(
           children: [
             Center(
@@ -56,7 +56,8 @@ class _JobScraperState extends State<JobScraper> {
                   child: TextField(
                     controller: myController,
                     onSubmitted: (String value) {
-                      print('hello');
+                      print(value);
+                      _navigateToNextScreen(context);
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
@@ -68,7 +69,20 @@ class _JobScraperState extends State<JobScraper> {
             ),
           ],
         ),
+        ),
       ),
+    );
+  }
+  void _navigateToNextScreen(BuildContext context) {
+    Navigator.of(context).push(MaterialPageRoute(builder: (context) => SearchResult()));
+  }
+}
+
+class SearchResult extends StatelessWidget{
+  @override
+  Widget build( BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(title: const Text('New Screen'),),
     );
   }
 }
