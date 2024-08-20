@@ -77,6 +77,8 @@ class _JobScraperState extends State<JobScraper> {
 
 class SearchResult extends StatelessWidget{
   final String value;
+  final myController = TextEditingController();
+
   SearchResult(this.value);
   @override
   Widget build( BuildContext context) {
@@ -88,7 +90,7 @@ class SearchResult extends StatelessWidget{
           body: Stack(
             children: [
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
                 child: Text(
                   'JobScraper',
                   style: TextStyle(
@@ -97,6 +99,23 @@ class SearchResult extends StatelessWidget{
                   ),
                 ),
               ),
+              SizedBox(
+                width: 1000,
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 180, vertical: 16),
+                  child: TextField(
+                    controller: TextEditingController()..text = value,
+                    onSubmitted: (String value) {
+                      print(value);
+                      Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResult(value)));
+                    },
+                    decoration: const InputDecoration(
+                      border: OutlineInputBorder(),
+                      hintText: 'Enter a search term',
+                    ),
+                  )
+                )
+              )
             ],
           ),
         ),
