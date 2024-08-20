@@ -3,6 +3,8 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter/widgets.dart';
+import 'package:http/http.dart' as http;
+import 'package:html/dom.dart' as dom;
 
 void main () {
   runApp(const JobScraper());
@@ -13,6 +15,24 @@ class JobScraper extends StatefulWidget {
 
   @override
   State<JobScraper> createState() => _JobScraperState();
+}
+
+Future getWbesiteData(value) async {
+  final newValue = value.split(' ');
+  String finalValue = "";
+  for (final x in newValue){
+    finalValue += x + '+';
+  }
+  final url = Uri.parse('https://uk.indeed.com/jobs?q=' + finalValue);
+  final response = await http.get(url);
+  dom.Document html = dom.Document.html(response.body);
+
+  final titles = html.querySelectorAll('h2 > a > span').map((element) => element.innerHtml.trim()).toList();
+
+  print('Count: ${titles.length}');
+  for (final title in titles){
+    debugPrint(title);
+  }
 }
 
 class _JobScraperState extends State<JobScraper> {
@@ -58,6 +78,7 @@ class _JobScraperState extends State<JobScraper> {
                       onSubmitted: (String value) {
                         print(value);
                         Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResult(value)));
+                        getWbesiteData(value);
                       },
                       decoration: const InputDecoration(
                         border: OutlineInputBorder(),
@@ -108,6 +129,7 @@ class SearchResult extends StatelessWidget{
                     onSubmitted: (String value) {
                       print(value);
                       Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResult(value)));
+                      getWbesiteData(value);
                     },
                     decoration: const InputDecoration(
                       border: OutlineInputBorder(),
