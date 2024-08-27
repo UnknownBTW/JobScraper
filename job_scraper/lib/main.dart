@@ -8,6 +8,17 @@ import 'package:html/dom.dart' as dom;
 
 void main () {
   runApp(const JobScraper());
+  
+}
+
+class Article {
+  final String url;
+  final String title;
+  
+  const Article({
+    required this.url,
+    required this.title,
+  });
 }
 
 class JobScraper extends StatefulWidget {
@@ -17,27 +28,9 @@ class JobScraper extends StatefulWidget {
   State<JobScraper> createState() => _JobScraperState();
 }
 
-Future getWbesiteData(value) async {
-  final newValue = value.split(' ');
-  String finalValue = "";
-  for (final x in newValue){
-    finalValue += x + '+';
-  }
-  final url = Uri.parse('https://uk.indeed.com/jobs?q=' + finalValue);
-  final response = await http.get(url);
-  dom.Document html = dom.Document.html(response.body);
-
-  final titles = html.querySelectorAll('h2 > a > span').map((element) => element.innerHtml.trim()).toList();
-
-  print('Count: ${titles.length}');
-  for (final title in titles){
-    debugPrint(title);
-  }
-}
-
+List<Article> articles = [];
 class _JobScraperState extends State<JobScraper> {
   final myController = TextEditingController();
-
   @override
   void dispose() {
     // Clean up the controller when the widget is disposed.
@@ -46,6 +39,31 @@ class _JobScraperState extends State<JobScraper> {
   }
 
   @override
+  Future getWbesiteData(value) async {
+    final newValue = value.split(' ');
+    String finalValue = "";
+    for (final x in newValue){
+      finalValue += x + '+';
+    }
+    final url = Uri.parse('https://uk.indeed.com/jobs?q=' + finalValue);
+    final response = await http.get(url);
+    dom.Document html = dom.Document.html(response.body);
+    
+    final titles = html.querySelectorAll('h2 > a > span').map((element) => element.innerHtml.trim()).toList();
+    
+    final urls = html.querySelectorAll('h2 > a').map((element) => 'https://uk.indeed.com${element.attributes['href']}').toList();
+    print('Count: ${titles.length}');
+    
+    setState((){
+      articles = List.generate(
+        titles.length,
+        (index) =>Article(
+          title: titles[index],
+          url: urls[index],
+        )
+      );
+    });
+  }
   Widget build(BuildContext context){
     String appTitle = 'JobScraper';
     return MaterialApp(
@@ -108,40 +126,62 @@ class SearchResult extends StatelessWidget{
       home: Builder(
         builder: (context) => Scaffold(
           backgroundColor: Colors.white,
-          body: Stack(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 20),
-                child: Text(
-                  'JobScraper',
-                  style: TextStyle(
-                    fontSize: 25,
-                    fontWeight: FontWeight.bold,
+          appBar: AppBar(
+            toolbarHeight: 100,
+            toolbarOpacity: 1,
+            backgroundColor: Colors.white,
+            title: Stack(
+              children:[
+                Container(
+                  padding: const EdgeInsets.only(top: 10),
+                  child:  Text(
+                    'JobScraper',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                 ),
-              ),
-              SizedBox(
-                width: 1000,
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 180, vertical: 16),
-                  child: TextField(
-                    controller: TextEditingController()..text = value,
-                    onSubmitted: (String value) {
-                      print(value);
-                      Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResult(value)));
-                      getWbesiteData(value);
-                    },
-                    decoration: const InputDecoration(
-                      border: OutlineInputBorder(),
-                      hintText: 'Enter a search term',
-                    ),
+                SizedBox(
+                  width: 1000,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 150, vertical: 0),
+                    child: TextField(
+                      controller: TextEditingController()..text = value,
+                      onSubmitted: (String value) {
+                        print(value);
+                        Navigator.push(context, MaterialPageRoute(builder: (context) => SearchResult(value)));
+                        //getWbesiteData(value);
+                      },
+                      decoration: const InputDecoration(
+                        border: OutlineInputBorder(),
+                        hintText: 'Enter a search term',
+                      ),
+                    )
                   )
-                )
-              )
-            ],
+                ),
+              ]
+            ), 
           ),
+          body: Stack(
+            children: [
+            SelectionArea(
+              child: ListView.builder(
+                padding: const EdgeInsets.all(80),
+                itemCount: articles.length,
+                itemBuilder: (context, index) {
+                  final article = articles[index];
+                    
+                  return ListTile(
+                    title: Text(article.title),
+                    subtitle: Text(article.url),
+                  );
+                }
+              ),
+            )
+          ],
         ),
-      )
-    );
+      ),
+    )
+  );
   }
 }
