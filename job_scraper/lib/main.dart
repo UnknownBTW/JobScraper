@@ -202,8 +202,8 @@ class SearchResult extends StatelessWidget{
                     subtitle: Text(article.url),
                   );
                 }
-              )
-            )
+              ),
+            ),
           ],
         ),
       ),
