@@ -30,6 +30,7 @@ class JobScraper extends StatefulWidget {
 
 List<Article> articles1 = [];
 List<Article> articles2 = [];
+List<Article> allArticles = articles1 + articles2;
 class _JobScraperState extends State<JobScraper> {
   final myController = TextEditingController();
   @override
@@ -47,19 +48,17 @@ class _JobScraperState extends State<JobScraper> {
       finalValue += x + '+';
     }
     final url = Uri.parse('https://uk.indeed.com/jobs?q=' + finalValue);
-    final url2 = Uri.parse('https://uk.indeed.com/jobs?q=' + finalValue);
+    final url2 = Uri.parse('https://www.reed.co.uk/jobs/' + finalValue);
     final response = await http.get(url);
     final response2 = await http.get(url2);
     dom.Document html = dom.Document.html(response.body);
     dom.Document html2 = dom.Document.html(response2.body);
     
     final titles = html.querySelectorAll('h2 > a > span').map((element) => element.innerHtml.trim()).toList();
-    final titles2 = html2.querySelectorAll('h2 > a > span').map((element) => element.innerHtml.trim()).toList();
+    final titles2 = html2.querySelectorAll('article > div > button').map((element) => element.innerHtml.trim()).toList();
 
     final urls = html.querySelectorAll('h2 > a').map((element) => 'https://uk.indeed.com${element.attributes['href']}').toList();
-    final urls2 = html.querySelectorAll('h2 > a').map((element) => 'https://uk.indeed.com${element.attributes['href']}').toList();
-    print('Count: ${titles.length}');
-    print('Count: ${titles2.length}');
+    final urls2 = html.querySelectorAll('h2 > a').map((element) => 'https://www.reed.co.uk${element.attributes['href']}').toList();
     
     setState((){
       articles1 = List.generate(
@@ -77,6 +76,8 @@ class _JobScraperState extends State<JobScraper> {
         ),
       );
     });
+    allArticles = articles1 + articles2;
+    print(allArticles.length);
   }
   Widget build(BuildContext context){
     String appTitle = 'JobScraper';
@@ -181,9 +182,9 @@ class SearchResult extends StatelessWidget{
             SelectionArea(
               child: ListView.builder(
                 padding: const EdgeInsets.all(80),
-                itemCount: articles1.length,
+                itemCount: allArticles.length,
                 itemBuilder: (context, index) {
-                  final article = articles1[index];;
+                  final article = allArticles[index];
                   return ListTile(
                     title: Text(article.title),
                     subtitle: Text(article.url),
@@ -191,19 +192,7 @@ class SearchResult extends StatelessWidget{
                 }
               ),
             ),
-            SelectionArea(
-              child: ListView.builder(
-                padding: const EdgeInsets.all(80),
-                itemCount: articles2.length,
-                itemBuilder: (context, index) {
-                  final article = articles2[index];;
-                  return ListTile(
-                    title: Text(article.title),
-                    subtitle: Text(article.url),
-                  );
-                }
-              ),
-            ),
+
           ],
         ),
       ),
