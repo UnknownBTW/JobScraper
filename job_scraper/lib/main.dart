@@ -47,7 +47,7 @@ class _JobScraperState extends State<JobScraper> {
     for (final x in newValue){
       finalValue += x + '+';
     }
-    final url = Uri.parse('https://uk.indeed.com/jobs?q=' + finalValue);
+    final url = Uri.parse('https://uk.indeed.com/jobs/' + finalValue);
     final url2 = Uri.parse('https://www.reed.co.uk/jobs/' + finalValue);
     final response = await http.get(url);
     final response2 = await http.get(url2);
